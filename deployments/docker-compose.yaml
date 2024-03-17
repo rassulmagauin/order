@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    environment:
+      HOST_NUMBER: "127.0.0.1"
+      USERS: "user1,user2,user3,user4"
+      DATABASE_URL: "postgres://rassul:12345@db:5432/orderdb"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:16.2-alpine3.19
+    environment:
+      POSTGRES_DB: orderdb
+      POSTGRES_USER: rassul
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge
